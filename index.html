@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern Web Page</title>
+  <style>
+    :root {
+      --primary-color: #4f46e5;
+      --secondary-color: #6366f1;
+      --bg-color: #f9fafb;
+      --text-color: #1f2937;
+      --card-bg: #ffffff;
+      --border-radius: 12px;
+      --shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      font-size: 1.1rem;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Welcome to My Website</h1>
+    <p>A clean and responsive HTML + CSS template</p>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>About This Template</h2>
+      <p>This is a simple, modern HTML layout using CSS for visual appeal and responsiveness. You can use it for portfolios, landing pages, or basic content sites.</p>
+    </div>
+
+    <div class="card">
+      <h2>Features</h2>
+      <ul>
+        <li>Responsive Design</li>
+        <li>Modern Aesthetic</li>
+        <li>Reusable Card Components</li>
+        <li>Easy to Customize</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Your Name. All rights reserved.
+  </footer>
+
+</body>
+</html>
