@@ -1,4 +1,4 @@
-import 'dotenv/config'; // This should be the first import
+import 'dotenv/config'; 
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -10,7 +10,10 @@ import pipelineRoutes from './routes/pipelineRoutes.js';
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 
 // Configure morgan logging
