@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Welcome = () => {
-  const appName = "Shiping Together";
+  const appName = "ShipTogether";
   const tagline = "Unify Your CI/CD, Empower Your Team.";
 
   // Subtle animation for hero section
@@ -44,7 +44,7 @@ const Welcome = () => {
             {/* Text Content */}
             <div className="lg:max-w-lg">
               <h1 className="text-4xl sm:text-5xl font-bold leading-tight">
-                Welcome to <span className="text-yellow-300">{appName}</span>
+                Welcomes to <span className="text-yellow-300">{appName}</span>
               </h1>
               <p className="mt-4 text-xl sm:text-2xl font-light">
                 {tagline}
