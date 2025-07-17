@@ -92,7 +92,7 @@ const Login = () => {
                 Unify Your CI/CD, Empower Your Team
               </p>
               <p className="mt-6 text-base sm:text-lg text-white/90 leading-relaxed">
-                Access your ShipTogether account to streamline CI/CD workflows, collaborate with your team, and deploy with confidence.
+                Access your ShipTogether account to streamline Continuous Integration & Continuous Deployment workflows, collaborate with your team, and deploy with confidence.
               </p>
             </div>
 
