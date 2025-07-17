@@ -44,7 +44,7 @@ const Welcome = () => {
             {/* Text Content */}
             <div className="lg:max-w-lg">
               <h1 className="text-4xl sm:text-5xl font-bold leading-tight">
-                Welcomes to <span className="text-yellow-300">{appName}</span>
+                Welcome to <span className="text-yellow-300">{appName}</span>
               </h1>
               <p className="mt-4 text-xl sm:text-2xl font-light">
                 {tagline}
