@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Welcome = () => {
-  const appName = "ShipTogether";
+  const appName = "Shiping Together";
   const tagline = "Unify Your CI/CD, Empower Your Team.";
 
   // Subtle animation for hero section
