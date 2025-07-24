@@ -1,293 +1,368 @@
-# 🚀 MERN Stack Application on AWS Architecture
+# 🌟 MERN Application CI/CD Pipeline 🚀
 
-## 📚 Introduction
-This guide details the deployment of a 3-tier MERN stack application on Amazon Web Services (AWS), featuring a React.js frontend, Express.js backend, and Amazon DocumentDB database. The architecture is designed for high availability, security, and scalability, accessible via the custom subdomain `maheshawsdevops.le-crowninteriors.com`. It leverages AWS services like VPC, EC2, Application Load Balancers (ALBs), Route 53, and AWS Certificate Manager (ACM) to ensure a robust and secure user experience. 🎉
+Welcome to the **MERN Application CI/CD Pipeline** project! This repository showcases a robust, automated, and modern CI/CD pipeline built for a MERN (MongoDB, Express.js, React, Node.js) application. The pipeline leverages cutting-edge DevOps tools to ensure seamless code integration, testing, quality checks, containerization, and deployment to a Kubernetes cluster. 🎉
 
-## 🏗️ High-Level Architecture
-The application follows a 3-tier architecture:
+This project demonstrates my expertise in DevOps practices, containerization, and orchestration, making it a standout piece in my portfolio. Explore the setup, pipeline stages, and technologies below! 💻
 
-### Architecture Diagram 🗂️
+---
 
-![MERN App Architecture](./image.png)
-- User Access 💻: Users access the frontend via `maheshawsdevops.le-crowninteriors.com`
-- Route 53 🌐: Manages DNS for the subdomain
-- Public ALB (web-alb) 🛡️: Routes public traffic to the web tier
-- Web Tier EC2 Instances 🖥️: Host the React.js frontend
-- Internal ALB (app-alb) 🔄: Routes API requests to the app tier
-- App Tier EC2 Instances ⚙️: Host the Express.js backend
-- DocumentDB 📊: Stores application data in private subnets
-- VPC 🌳: Isolates resources with public and private subnets
+## 📋 Project Overview
 
-![Ship Together](./my-image-2.png)
-## 🧩 Components
-### 1. Domain and DNS 🌐
-- **Provider**: Namecheap 🏠
-- **Main domain**: le-crowninteriors.com (used for another project)
-- **Subdomain**: maheshawsdevops.le-crowninteriors.com (delegated to Route 53)
+This project automates the deployment of a MERN application using a CI/CD pipeline. The pipeline integrates code from a GitHub repository, runs tests, performs code quality checks, builds Docker images, pushes them to DockerHub, and deploys to a Kubernetes cluster managed by ArgoCD. The pipeline ensures high-quality code, fast deployments, and continuous synchronization with the latest updates.
 
-**Route 53**:
-- Hosted Zone: maheshawsdevops.le-crowninteriors.com
-- A Record: Points to web-alb-1524460785.us-east-1.elb.amazonaws.com
+### 🛠️ Tech Stack
+- **Frontend**: Vite + React.js ⚛️
+- **Backend**: Express.js 🖥️
+- **Database**: MongoDB, MongoDB Atlas 🍃
+- **CI/CD Tools**:
+  - **Jenkins**: Pipeline automation 🤖
+  - **Git & GitHub**: Version control 📂
+  - **Jest**: Unit testing 🧪
+  - **SonarQube**: Code quality analysis 📊
+  - **Docker & DockerHub**: Containerization and image registry 🐳
+  - **ArgoCD & Image Updater**: Continuous deployment and image updates 🚀
+  - **Kubernetes**: Container orchestration ☸️
+- **Infrastructure**: EC2 Machine, Local Ubuntu Virtual Machine 🖥️
 
-### 2. Public ALB (web-alb) 📡
-- **DNS**: web-alb-1524460785.us-east-1.elb.amazonaws.com
-- **Listeners**:
-  - HTTP:80 (redirects to HTTPS:443) 🔗
-  - HTTPS:443 (uses ACM certificate for maheshawsdevops.le-crowninteriors.com) 🔒
+---
 
-**Security Group**: public-alb-sg
-- Inbound: HTTP:80, HTTPS:443 from 0.0.0.0/0
-- Outbound: Port 5173 to web-tier-ec2-sg
+## 📸 Project Setup Snapshot
 
-**Target Group**: web-tg (targets web tier EC2 instances on port 5173) 🎯
+![Project Overview](images/project-overview.png)  
+*Placeholder for project overview image. Replace with actual image link.*
 
-### 3. Web Tier 🖥️
-- **EC2 Instances**: 10.0.1.43, 10.0.2.74 (in private subnets 10.0.3.0/24, 10.0.4.0/24)
-- **Application**: React.js frontend served via serve on port 5173 📦
+---
 
-**Security Group**: web-tier-ec2-sg
-- Inbound: Port 5173 from public-alb-sg
-- Outbound: Port 80 to internal-alb-sg, all to 0.0.0.0/0
+## 🚀 CI/CD Pipeline Stages
 
-### 4. Internal ALB (app-alb) 📡
-- **DNS**: internal-app-alb-670238393.us-east-1.elb.amazonaws.com
-- **Listener**: HTTP:80 (forwards to app-tg) 🔗
+The pipeline is orchestrated using **Jenkins** running on a local Ubuntu VM as a localhost setup. Below are the detailed stages of the pipeline, each designed to ensure a smooth and reliable deployment process.
 
-**Security Group**: internal-alb-sg
-- Inbound: Port 80 from web-tier-ec2-sg
-- Outbound: Port 5000 to app-tier-ec2-sg
-
-**Target Group**: app-tg (targets app tier EC2 instances on port 5000) 🎯
-
-### 5. App Tier ⚙️
-- **EC2 Instances**: i-0277ee990b21fdbb5, i-0639e219746d2fb1f (in private subnets 10.0.3.0/24, 10.0.4.0/24)
-- **Application**: Express.js backend on port 5000
-
-**Security Group**: app-tier-ec2-sg
-- Inbound: Port 5000 from internal-alb-sg
-- Outbound: Port 27017 to docdb-sg, all to 0.0.0.0/0 (via NAT Gateway)
-
-### 6. Database 📊
-- **DocumentDB**: Cluster in private subnets 10.0.3.0/24, 10.0.4.0/24
-
-**Security Group**: docdb-sg
-- Inbound: Port 27017 from app-tier-ec2-sg
-
-### 7. Network Architecture 🌳
-- **VPC**: mern-vpc (CIDR: 10.0.0.0/16)
-- **Public Subnets**: 10.0.1.0/24 (us-east-1a), 10.0.2.0/24 (us-east-1b) host Public ALB, Internet Gateway, NAT Gateway 🌍
-- **Private Subnets**: 10.0.3.0/24, 10.0.4.0/24 (web/app tiers) & (DocumentDB) 🏠
-
-**Route Tables**:
-- Public Subnets: Route 0.0.0.0/0 to Internet Gateway 📶
-- Private Subnets: Route 0.0.0.0/0 to NAT Gateway 📡
-
-### 8. Security 🔒
-- **ACM Certificate**: Issued for maheshawsdevops.le-crowninteriors.com, attached to Public ALB
-- **Security Groups**: Configured for minimal access between components
-
-### 9. Traffic Flow 🔄
-
-| Flow | Description |
-|------|-------------|
-| User → Frontend | Users access `maheshawsdevops.le-crowninteriors.com`. DNS resolves to Public ALB via Route 53, forwarding to web tier EC2 instances. |
-| Frontend → Backend | Frontend makes API calls to `api.maheshawsdevops.le-crowninteriors.com`. Internal ALB forwards to app tier EC2 instances. |
-| Backend → Database | Backend connects to DocumentDB over the private network. |
-
-## 📝 Configuration Steps
-
-### 1. Create VPC and Subnets 🌳
-
-**VPC Setup**:
-- Create a VPC with CIDR block 10.0.0.0/16, named mern-vpc
-- Attach an Internet Gateway (IGW)
-
-**Subnets**:
-- Public Subnets:
-  - 10.0.1.0/24 in us-east-1a
-  - 10.0.2.0/24 in us-east-1b
-
-- Private Subnets (Web/App) & (DocumentDB):
-  - 10.0.3.0/24 in us-east-1a
-  - 10.0.4.0/24 in us-east-1b
-
-**NAT Gateway**:
-- Deploy in one public subnet (e.g., 10.0.1.0/24)
-
-**Route Tables**:
-- Public Subnets: Route 0.0.0.0/0 to IGW
-- Private Subnets: Route 0.0.0.0/0 to NAT Gateway
-
-**DB Subnet Group**:
-- Create mern-docdb-subnet-group including DocumentDB subnets
-
-### 2. Launch EC2 Instances 🖥️
-
-**Web Tier (React.js)**:
-- Launch two t2.micro instances in private subnets (10.0.3.0/24, 10.0.4.0/24)
-- Install Node.js 22.13.0:
-```bash
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-sudo apt-get install -y nodejs
+### 1️⃣ **Git Clone**
+- **Purpose**: Pulls the latest code from the GitHub repository.
+- **Prerequisites**:
+  - Git installed on the Jenkins VM.
+  - Jenkins Git plugin installed and configured.
+- **Trigger**: SCM polling (`* * * * *`) to build on every commit.
+- **Pipeline Code**:
+```groovy
+stage('Git Clone') {
+    steps {
+        git branch: 'main', url: 'https://github.com/smahesh-kumarr/CICD-2.0.git'
+    }
+}
 ```
+- **Output**: Successfully clones the `main` branch of the repository.
 
-## Clone and run the frontend:git clone <your-frontend-repo>
-```bash
-cd <frontend-directory>
-npm install
-npm install -g pm2
-pm2 start npm --name "react-app" -- start
+---
+
+### 2️⃣ **Install Dependencies**
+- **Purpose**: Installs Node.js dependencies for both frontend and backend.
+- **Prerequisites**:
+  - Node.js v23.13.0 installed on the Jenkins VM.
+  - NodeJS plugin installed and configured in Jenkins.
+- **Pipeline Code**:
+```groovy
+stage('Install Dependencies') {
+    steps {
+        dir('client') {
+            sh 'npm install'
+        }
+        dir('server') {
+            sh 'npm install'
+        }
+    }
+}
 ```
+- **Output**: Dependencies installed for both frontend (`client`) and backend (`server`) directories.
 
 
 
+---
 
-**App Tier (Express.js)**:
-- Launch two t2.micro instances in private subnets (10.0.3.0/24, 10.0.4.0/24).
-- Install Node.js (same as above).
-## Clone and run the backend:
-```bash
-git clone <your-backend-repo>
-cd <backend-directory>
-npm install
-pm2 start server.js --name "express-app"
+### 3️⃣ **Testing Stage**
+- **Purpose**: Runs unit tests for the frontend using Jest.
+- **Prerequisites**:
+  - Jest configured for testing.
+  - Sample test cases created for `Welcome.jsx` component.
+- **Pipeline Code**:
+```groovy
+stage('Test') {
+    steps {
+        sh 'cd client && npx jest src/components/_tests_/Welcome.test.jsx'
+    }
+}
 ```
+- **Output**: Tests for `Welcome.jsx` executed successfully.
 
+![Testing Stage](images/testing-stage.png)  
+*Placeholder for testing stage image.*
 
+---
 
-
-### 3. Configure Security Groups 🔒
-
-
-
-
-
-
-### 3. Configure Security Groups 🔒
-
-| Component       | Security Group      | Inbound Rules                                                     | Outbound Rules                                              |
-|----------------|---------------------|-------------------------------------------------------------------|-------------------------------------------------------------|
-| Web Tier EC2   | `web-tier-ec2-sg`   | Port 5173 from `public-alb-sg`                                    | Port 80 to `internal-alb-sg`, all to `0.0.0.0/0`            |
-| App Tier EC2   | `app-tier-ec2-sg`   | Port 5000 from `internal-alb-sg`                                  | Port 27017 to `docdb-sg`, all to `0.0.0.0/0`                |
-| Public ALB     | `public-alb-sg`     | Ports 80, 443 from `0.0.0.0/0`, Port 5173 to `web-tier-ec2-sg`    | —                                                           |
-| Internal ALB   | `internal-alb-sg`   | Port 80 from `web-tier-ec2-sg`                                    | Port 5000 to `app-tier-ec2-sg`                              |
-| DocumentDB     | `docdb-sg`          | Port 27017 from `app-tier-ec2-sg`                                 | None                                                        |
-
-### 4. Set Up Application Load Balancers (ALBs) 📡
-
-## Create and assign security groups in the AWS EC2 console.
-
-4. Set Up Application Load Balancers (ALBs) 📡
-
-## Public ALB (web-alb):
-- Create an internet-facing ALB in mern-vpc.
-- Subnets: 10.0.1.0/24, 10.0.2.0/24.
-- Security Group: public-alb-sg.
-- Target Group: web-tg (port 5173, HTTP, health check path /).
-- Listeners:
-- HTTP:80 (redirect to HTTPS:443).
-- HTTPS:443 (forward to web-tg, attach ACM certificate).
-
-
-## Internal ALB (app-alb):
-- Create an internal ALB in mern-vpc.
-- Subnets: 10.0.3.0/24, 10.0.4.0/24.
-- Security Group: internal-alb-sg.
-- Target Group: app-tg (port 5000, HTTP, health check path /api).
-- Listener: HTTP:80 (forward to app-tg).
-
-
-
-### 5. Set Up DocumentDB 📊
-
-## Create a DocumentDB cluster:
-- Environment: Dev/Test.
-- Instance Class: db.t3.medium.
-- Cluster Identifier: mern-docdb-cluster.
-- VPC: mern-vpc.
-- Subnet Group: mern-docdb-subnet-group.
-- Security Group: docdb-sg.
-
-
-## Note the cluster endpoint (e.g., mern-docdb-cluster.cluster-1234567890.us-east-1.docdb.amazonaws.com:27017).
-```bash
-# Update backend code:const mongoose = require('mongoose');
-
-const connectDB = async () => {
-  try {
-    const uri = 'mongodb://<username>:<password>@mern-docdb-cluster.cluster-1234567890.us-east-1.docdb.amazonaws.com:27017/?tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false';
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      tlsCAFile: '/path/to/rds-combined-ca-bundle.pem'
-    });
-    console.log('Connected to DocumentDB');
-  } catch (error) {
-    console.error('DocumentDB connection error:', error);
-  }
-};
-
-module.exports = connectDB;
+### 4️⃣ **SonarQube Analysis**
+- **Purpose**: Analyzes code quality for both frontend and backend using SonarQube.
+- **Prerequisites**:
+  - PostgreSQL and SonarQube set up on the Ubuntu VM.
+  - SonarQube token created and added to Jenkins credentials (`SonarQubeToken`).
+  - SonarQube Scanner plugin and Quality Gates plugin installed in Jenkins.
+  - SonarQube server configured with public IP: `http://52.90.151.34:9000/`.
+- **Pipeline Code**:
+```groovy
+stage('SonarQube Analysis') {
+    steps {
+        withSonarQubeEnv(credentialsId: 'SonarQubeToken', installationName: 'sonarserver') {
+            script {
+                def scannerHome = tool 'sonar-scanner'
+                dir('client') {
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mern-app-client"
+                }
+                dir('server') {
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mern-app-server"
+                }
+            }
+        }
+    }
+}
 ```
+- **Output**: Code quality analysis completed, results displayed on SonarQube dashboard.
 
-## Download the RDS CA certificate and place it in your backend directory.
+![SonarQube Analysis](images/sonarqube-analysis.png)  
+*Placeholder for SonarQube analysis image.*
 
-### 6. Update Frontend to Use Internal ALB 🔄
+---
 
-- Update .env in your React.js project:VITE_API_URL=[invalid url, do not cite]
-
-
-# Redeploy the frontend:npm run build
-```bash
-pm2 restart react-app
+### 5️⃣ **Build Docker Images**
+- **Purpose**: Builds Docker images for frontend and backend using their respective Dockerfiles.
+- **Prerequisites**:
+  - Docker engine installed on the Jenkins VM.
+  - Docker plugin installed in Jenkins.
+- **Dockerfiles**:
+  - **Client Dockerfile**:
+```dockerfile
+FROM node:22-alpine AS builder
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+FROM node:22-alpine
+WORKDIR /app
+COPY --from=builder /app /app
+RUN npm install
+EXPOSE 5173
+CMD ["npm", "run", "dev"]
 ```
+  - **Server Dockerfile**:
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
+EXPOSE 5000
+CMD ["npx", "nodemon", "server.js"]
+```
+- **Pipeline Code**:
+```groovy
+stage('Build Docker Images') {
+    steps {
+        script {
+            dir('client') {
+                docker.build("maheshkumars772/cicd-client:${TAG_VERSION}")
+            }
+            dir('server') {
+                docker.build("maheshkumars772/cicd-server:${TAG_VERSION}")
+            }
+        }
+    }
+}
+```
+- **Output**: Docker images built for both frontend and backend.
+
+![Image building Stage](images/Image-building-stage.png)  
+*Placeholder for testing stage image.*
 
 
-### 7. Configure Route 53 🌐
+---
 
-- Create a hosted zone for maheshawsdevops.le-crowninteriors.com.
-- In Namecheap, add NS records for the subdomain pointing to Route 53 name servers.
-- Create an A record:
-- Name: maheshawsdevops.le-crowninteriors.com.
-- Alias: web-alb.
+### 6️⃣ **Push Docker Images to DockerHub**
+- **Purpose**: Pushes the built Docker images to DockerHub.
+- **Prerequisites**:
+  - DockerHub credentials added to Jenkins (`DockerHubCreds`).
+- **Pipeline Code**:
+```groovy
+stage('Push Docker Images') {
+    steps {
+        script {
+            docker.withRegistry('https://registry.hub.docker.com', 'DockerHubCreds') {
+                docker.image("maheshkumars772/cicd-client:${TAG_VERSION}").push()
+                docker.image("maheshkumars772/cicd-server:${TAG_VERSION}").push()
+            }
+        }
+    }
+}
+```
+- **Output**: Images successfully pushed to DockerHub.
+
+![DockerHub Push](images/dockerhub-push.png)  
+*Placeholder for DockerHub push image.*
+
+---
+
+### 7️⃣ **Update Deployment File**
+- **Purpose**: Updates the Kubernetes deployment YAML with the latest image tags.
+- **Prerequisites**:
+  - Kubernetes manifests repository: [Image-Updater-CICD](https://github.com/smahesh-kumarr/Image-Updater-CICD.git).
+  - GitHub credentials added to Jenkins (`github`).
+- **Pipeline Code**:
+```groovy
+stage('Update Deployment File') {
+    steps {
+        dir('manifests') {
+            git url: "https://github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git", branch: 'main', credentialsId: 'github'
+            withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
+                sh '''
+                git config user.email "maheshkumar08042006@gmail.com"
+                git config user.name "smahesh-kumarr"
+                sed -i "s|maheshkumars772/cicd-client:v[0-9]*|maheshkumars772/cicd-client:${TAG_VERSION}|g" deployment.yaml
+                sed -i "s|maheshkumars772/cicd-server:v[0-9]*|maheshkumars772/cicd-server:${TAG_VERSION}|g" deployment.yaml
+                git add deployment.yaml
+                git commit -m "Update image tags to ${TAG_VERSION}" || echo "No changes to commit"
+                git push https://$GIT_USERNAME:$GITHUB_TOKEN@github.com/$GIT_USER_NAME/$GIT_REPO_NAME.git HEAD:main
+                '''
+            }
+        }
+    }
+}
+```
+- **Output**: Kubernetes deployment YAML updated with the latest image tags.
+
+![Scripts updates](images/Image-updates.png)  
+*Placeholder for CI/CD stage image.*
+
+![CI-ENDS](images/CI-END.png)  
+*Placeholder for CI/CD stage image.*
 
 
+---
 
+### 8️⃣ **Kubernetes & ArgoCD Setup**
 
-### 8. Set Up ACM for HTTPS 🔒
+![VMS-On-Local](images/Servers.png)  
+*Placeholder for CI/CD stage image.*
 
-# Request a certificate in ACM (us-east-1):
-- Domain: maheshawsdevops.le-crowninteriors.com.
-- Validation: DNS.
-- Add CNAME record in Route 53 for validation.
-- Attach the certificate to web-alb (HTTPS:443 listener).
+- **Purpose**: Deploys the application to a Kubernetes cluster with ArgoCD for continuous synchronization.
+- **Kubernetes Setup**:
+  - Single-node Kubernetes cluster set up using `kubeadm` on the local VM.
+  - Components: `kubelet`, `kube-apiserver`, `crictl`, and CNI plugins.
+  - Cluster configured with untainted master node and IP ranges assigned.
+- **ArgoCD Setup**:
+  1. Created `argocd` namespace and installed ArgoCD:
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+  2. Verified pods:
+```bash
+kubectl get pods -n argocd
+```
+  3. Port-forwarded ArgoCD server:
+```bash
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+  4. Logged in using the default admin password:
+```bash
+kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
+```
+  5. Installed ArgoCD Image Updater:
+```bash
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/manifests/install.yaml
+```
+  6. Generated SSH key for GitHub access:
+```bash
+ssh-keygen -t rsa -b 4096 -C "maheshkumar08042006@gmail.com"
+```
+  7. Added public key to GitHub repository’s deploy keys with write access.
+  8. Created a secret for Git credentials:
+```bash
+kubectl create secret generic git-creds --from-file=sshPrivateKey=~/.ssh/id_rsa -n argocd
+```
+  9. Configured ArgoCD Image Updater interval (30 seconds):
+```yaml
+metadata:
+  name: mern-app
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: backend=maheshkumars772/cicd-backend,frontend=maheshkumars772/cicd-frontend
+    argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/git-creds
+    argocd-image-updater.argoproj.io/git-branch: main
+    argocd-image-updater.argoproj.io/backend.update-strategy: semver
+    argocd-image-updater.argoproj.io/frontend.update-strategy: semver
+    argocd-image-updater.argoproj.io/backend.force-update: "true"
+    argocd-image-updater.argoproj.io/frontend.force-update: "true"
+    argocd-image-updater.argoproj.io/backend.allow-tags: regexp:^v[0-9]+$
+    argocd-image-updater.argoproj.io/frontend.allow-tags: regexp:^v[0-9]+$
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/smahesh-kumarr/Image-Updater-CICD.git
+    path: .
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mern-app
+  syncPolicy:
+    automated: {}
+```
+- **Output**: ArgoCD syncs the application every 30 seconds, automatically deploying new images.
 
-### 9. Testing and Monitoring 📊
+![ArgoCD Sync](images/argocd-sync.png)  
+*Placeholder for ArgoCD sync image.*
 
-- Verify Access:
-- Access `[invalid url, do not cite].
-- Ensure frontend loads and API calls succeed.
+---
 
+## 📂 Kubernetes Resources
 
-## CloudWatch:
-# Enable monitoring for EC2, ALBs, and DocumentDB.
-# Set alarms for CPU usage or unhealthy targets.
+The Kubernetes manifests are stored in the [Image-Updater-CICD](https://github.com/smahesh-kumarr/Image-Updater-CICD.git) repository. They include:
+- **Frontend Deployment**: Deploys the React frontend.
+- **Backend Deployment**: Deploys the Express.js backend.
+- **Frontend Service**: Exposed as NodePort.
+- **Backend Service**: Exposed as NodePort.
 
+![Frontend Pod](images/Frontend-Pod.png)  
+*Placeholder for frontend pod image.*
 
+![Backend Pod](images/Backend-Pod.png)  
+*Placeholder for Backend pod image.*
+---
 
+## 🎥 Output Video
 
-### 10. Best Practices 🔧
+[Watch the Pipeline in Action](https://drive.google.com/file/d/1l2mtgID86NKQEwffeh28KKgzSuYiZiJs/view?usp=drive_link)  
+*Placeholder for Google Drive video link. Replace with actual link.*
 
-## Cost:
-- Use t2.micro instances (free-tier eligible).
-- Choose db.t3.medium for DocumentDB.
+---
 
+## 🏆 Achievements
 
-### Security:
-- Restrict security group rules.
-- Use IAM roles for EC2.
+- **Automated CI/CD Pipeline**: Fully automated from code commit to deployment.
+- **Code Quality**: Ensured with Jest tests and SonarQube analysis.
+- **Containerization**: Dockerized frontend and backend for portability.
+- **Continuous Deployment**: Achieved with ArgoCD and Image Updater for real-time updates.
+- **Scalable Infrastructure**: Deployed on a Kubernetes cluster for reliability.
 
+---
 
+## 📧 Contact
 
+**Author**: Mahesh Kumar S  
+**Email**: [maheshkumar08042006@gmail.com](mailto:maheshkumar08042006@gmail.com)  
+**GitHub**: [smahesh-kumarr](https://github.com/smahesh-kumarr)
 
-### 🛠️ Proof of Concept
+Feel free to reach out for questions, feedback, or collaboration! 🌟
+
+---
+
+## 🎉 Conclusion
+
+This project showcases a modern CI/CD pipeline for a MERN application, integrating industry-standard tools like Jenkins, Docker, Kubernetes, and ArgoCD. It demonstrates my ability to build scalable, automated, and high-quality DevOps workflows. Explore the repository, try the pipeline, and let me know your thoughts! 🚀
