@@ -29,7 +29,7 @@ This project automates the deployment of a MERN application using a CI/CD pipeli
 ## 📸 Project Setup Snapshot
 
 ![Project Overview](images/project-overview.png)  
-*Placeholder for project overview image. Replace with actual image link.*
+
 
 ---
 
@@ -95,7 +95,7 @@ stage('Test') {
 - **Output**: Tests for `Welcome.jsx` executed successfully.
 
 ![Testing Stage](images/testing-stage.png)  
-*Placeholder for testing stage image.*
+
 
 ---
 
@@ -127,7 +127,7 @@ stage('SonarQube Analysis') {
 - **Output**: Code quality analysis completed, results displayed on SonarQube dashboard.
 
 ![SonarQube Analysis](images/sonarqube-analysis.png)  
-*Placeholder for SonarQube analysis image.*
+
 
 ---
 
@@ -180,7 +180,7 @@ stage('Build Docker Images') {
 - **Output**: Docker images built for both frontend and backend.
 
 ![Image building Stage](images/Image-building-stage.png)  
-*Placeholder for testing stage image.*
+
 
 
 ---
@@ -205,7 +205,7 @@ stage('Push Docker Images') {
 - **Output**: Images successfully pushed to DockerHub.
 
 ![DockerHub Push](images/dockerhub-push.png)  
-*Placeholder for DockerHub push image.*
+
 
 ---
 
@@ -238,10 +238,10 @@ stage('Update Deployment File') {
 - **Output**: Kubernetes deployment YAML updated with the latest image tags.
 
 ![Scripts updates](images/Image-updates.png)  
-*Placeholder for CI/CD stage image.*
+
 
 ![CI-ENDS](images/CI-END.png)  
-*Placeholder for CI/CD stage image.*
+
 
 
 ---
@@ -249,7 +249,7 @@ stage('Update Deployment File') {
 ### 8️⃣ **Kubernetes & ArgoCD Setup**
 
 ![VMS-On-Local](images/Servers.png)  
-*Placeholder for CI/CD stage image.*
+
 
 - **Purpose**: Deploys the application to a Kubernetes cluster with ArgoCD for continuous synchronization.
 - **Kubernetes Setup**:
@@ -317,7 +317,7 @@ spec:
 - **Output**: ArgoCD syncs the application every 30 seconds, automatically deploying new images.
 
 ![ArgoCD Sync](images/argocd-sync.png)  
-*Placeholder for ArgoCD sync image.*
+
 
 ---
 
@@ -330,16 +330,16 @@ The Kubernetes manifests are stored in the [Image-Updater-CICD](https://github.c
 - **Backend Service**: Exposed as NodePort.
 
 ![Frontend Pod](images/Frontend-Pod.png)  
-*Placeholder for frontend pod image.*
+
 
 ![Backend Pod](images/Backend-Pod.png)  
-*Placeholder for Backend pod image.*
+
 ---
 
 ## 🎥 Output Video
 
 [Watch the Pipeline in Action](https://drive.google.com/file/d/1l2mtgID86NKQEwffeh28KKgzSuYiZiJs/view?usp=drive_link)  
-*Placeholder for Google Drive video link. Replace with actual link.*
+
 
 ---
 
